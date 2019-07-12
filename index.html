@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+  <meta charset="utf-8" />
+  <title>WebSocket Test</title>
+  <script language="javascript" type="text/javascript">
+
+  var wsUri = "ws://13.233.18.146:8082";
+  var output;
+  var tick;
+  var tock;
+  function init()
+  {
+    output = document.getElementById("output");
+    testWebSocket();
+  }
+
+  function testWebSocket()
+  {
+    tick = new Date().getTime();
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onclose = function(evt) { onClose(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onerror = function(evt) { onError(evt) };
+  }
+
+  function onOpen(evt)
+  {
+    tock = new Date().getTime();
+    writeToScreen("CONNECTED IN : " + (tock-tick)/1000.0 + " secs");
+  }
+
+  function onClose(evt)
+  {
+    writeToScreen("DISCONNECTED");
+    tick = 0;
+    tock = 0;
+  }
+
+  function onMessage(evt)
+  {
+    tock = new Date().getTime();
+    writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data + ": " + (tock-tick)/1000.0 +' secs</span>');
+  }
+
+  function onError(evt)
+  {
+    writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+  }
+
+  function doSend(message)
+  {
+    output.innerHTML = "";
+    writeToScreen("SENT: " + message);
+    tick = new Date().getTime();
+    websocket.send(message);
+  }
+
+  function writeToScreen(message)
+  {
+    var pre = document.createElement("p");
+    pre.style.wordWrap = "break-word";
+    pre.innerHTML = message;
+    output.appendChild(pre);
+  }
+
+  window.addEventListener("load", init, false);
+
+  function send(){
+     
+  }
+  </script>
+
+  <h2>WebSocket Test</h2>
+  <button onclick="doSend('Hello')">Send Hello</button>
+  <div id="output"></div>
